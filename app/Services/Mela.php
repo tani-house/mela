@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Services\MasterConfiguration\OrmSetting;
 use App\Services\Media\MediaRepositoryDb;
 use App\Services\Media\Interfaces\MediaRepository;
 use App\Services\Media\MediaGw;
+use App\Services\MasterConfiguration\MySqlSetting;
 use App\Services\Orm\OrmGw;
 
 /**
@@ -46,10 +48,37 @@ class Mela
     {
         static $gw = null;
         if (null === $gw) {
-            $config = config('database.connections.mysql');
-            $gw = new OrmGw($config);
+            $gw = new OrmGw(static::mysqlSetting(), static::ormSetting());
         }
         return $gw;
     }
 
+    /**
+     * @return MySqlSetting
+     */
+    public static function mysqlSetting() : MySqlSetting
+    {
+        static $gw = null;
+        if (null === $gw) {
+            $config = config('database.connections.mysql');
+            $gw = MySqlSetting::fromConfigArray($config);
+        }
+        return $gw;
+    }
+
+    /**
+     * @return OrmSetting
+     */
+    public static function ormSetting() : OrmSetting
+    {
+        static $gw = null;
+        if (null === $gw) {
+            $modelPath = config('database.doctrine.modelPath');
+            $env = config('app.env.APP_ENV');
+            if ($env === 'development') {
+                $gw = new OrmSetting($modelPath, true);
+            }
+        }
+        return $gw;
+    }
 }

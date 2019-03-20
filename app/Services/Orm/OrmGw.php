@@ -2,29 +2,55 @@
 
 namespace App\Services\Orm;
 
-use App\Services\Orm\Models\MySqlSetting;
+use App\Services\MasterConfiguration\MySqlSetting;
+use App\Services\MasterConfiguration\OrmSetting;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 
 class OrmGw
 {
-
     /**
      * @var MySqlSetting
      */
-    protected $setting;
+    private $mysqlSetting;
+
+    /**
+     * @var OrmSetting
+     */
+    private $ormSetting;
+
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
 
     /**
      * OrmGw constructor.
-     * @param MySqlSetting $setting
+     * @param MySqlSetting $mysqlSetting
+     * @param OrmSetting $ormSetting
+     * @throws \Doctrine\ORM\ORMException
      */
-    public function __construct(MySqlSetting $setting)
+    public function __construct(MySqlSetting $mysqlSetting, OrmSetting $ormSetting)
     {
-        $this->setting = $setting;
+        $this->mysqlSetting = $mysqlSetting;
+        $this->ormSetting = $ormSetting;
+        $config = Setup::createAnnotationMetadataConfiguration($ormSetting->getModelPath(), $ormSetting->isDevMode());
+        $dbParams = [
+            'driver' => 'pdo_mysql',
+            'user' => $mysqlSetting->getDbUser(),
+            'password' => $mysqlSetting->getDbPassword(),
+            'dbname' => $mysqlSetting->getDbName(),
+            'host' => $mysqlSetting->getHost(),
+        ];
+        $this->entityManager = EntityManager::create($dbParams, $config);
+        GetEnt
     }
 
-    public function createEntityManager()
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager(): EntityManager
     {
-        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-        $entityManager = EntityManager::create($dbParams, $config);
+        return $this->entityManager;
     }
 }
