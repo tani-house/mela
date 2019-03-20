@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Orm\Models;
+namespace App\Services\MasterConfiguration;
 
 class MySqlSetting
 {
@@ -44,6 +44,46 @@ class MySqlSetting
         $this->dbName = $dbName;
         $this->dbUser = $dbUser;
         $this->dbPassword = $dbPassword;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPort(): int
+    {
+        return $this->port;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDbName(): string
+    {
+        return $this->dbName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDbUser(): string
+    {
+        return $this->dbUser;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDbPassword(): string
+    {
+        return $this->dbPassword;
     }
 
     /**
